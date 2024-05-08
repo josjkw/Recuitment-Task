@@ -1,45 +1,37 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# Description
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+## Architecture solution
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+Architecture solution chosen is hexagonal + onion. This solution enables domain to be library agnostic while outer layers (eg: implementation details) are completely disconnected from domain logic.
+It is also convenient for replacing or extending individual layers without impacting the others.
 
----
+## Technical stack overview
 
-## Edit a file
+- Effect system : ZIO 
+- Database interaction : doobie + tzio + flyway (migrations)
+- Endpoints and swagger : tapir
+- Serialisation / Deserialization : circe
+- Type transformation : chimney
+- Http server / client : http4s / zio
+- Testing : testcontainers (kafka and postgres) / ziotest
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+## Testing
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+### Unit testing
 
----
+Unit testing doesn't necessitate the launch of specific services or applications. Instead, test containers are spawned for Kafka / Postgres.
+It ensures that tests remain isolated and independent of external dependencies, enhancing their reliability and reproducibility. 
+It also simplifies the setup process, as we don't need to manually configure and manage these services during testing.
 
-## Create a file
+There are also a few suites that would be mandatory to have (BoardServiceSpec, EndpointsSpec)
 
-Next, you’ll add a new file to this repository.
+### Integration testing
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+To launch the integration testing it is necessary to start the application (App) and the docker compose in docker-compose/docker-compose.yaml
+Once this is up and running, the suite can be launched.
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+Again a few tests / suite could be added for a more thorough testing. 
 
----
+## Error handling
 
-## Clone a repository
-
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
-
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
-
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+Error handling is rudimentary; there are no dedicated entities to manage errors. While it would be beneficial to have them, for simplicity's sake, I currently return a string.
