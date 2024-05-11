@@ -1,11 +1,10 @@
 package common
 
-import domain.{Bishop, ChessPiece, ChessPieceId, ChessPieceType, Position, Rook}
-import gateway.in.{ChessPieceIdInput, InsertPieceInput, MovePieceInput, PositionInput}
+import domain._
+import gateway.in.{InsertPieceInput, MovePieceInput, PositionInput}
 import io.scalaland.chimney.dsl.TransformerOps
-import zio.test.{Gen, defaultTestRunner}
+import zio.test.Gen
 import zio.test.magnolia.DeriveGen
-import zio.test.magnolia.DeriveGen.Typeclass
 
 object Generators {
 
